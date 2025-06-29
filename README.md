@@ -1,6 +1,6 @@
 # SkillSync — Job & Skill Match Platform
 
-SkillSync is a modern job and skill matching platform that intelligently connects job seekers with relevant opportunities based on their skills, experience, and learning progress. Built with Java 17 and Spring Boot 3, this full-stack web application is ideal for showcasing backend development skills, API design, authentication, and relational database handling.
+SkillSync is a modern job and skill matching platform that intelligently connects job seekers with relevant opportunities based on their skills, experience, and learning progress.
 
 ---
 
@@ -44,7 +44,7 @@ SkillSync is a modern job and skill matching platform that intelligently connect
 - MySQL 8
 
 ### Frontend
-- Thymeleaf (or React – optional)
+- Thymeleaf
 - HTML5, CSS3, Bootstrap 5
 - JavaScript (ES6)
 
@@ -53,7 +53,6 @@ SkillSync is a modern job and skill matching platform that intelligently connect
 - Spring DevTools
 - Swagger / OpenAPI
 - Bean Validation (Jakarta)
-- ModelMapper / MapStruct
 
 ---
 
@@ -65,7 +64,7 @@ src/
      ├── java/com/skillsync/
      │   ├── controller/
      │   ├── service/
-     │   ├── repository/
+     │   ├── repo/
      │   ├── model/
      │   ├── config/
      │   └── dto/
@@ -135,7 +134,7 @@ CREATE DATABASE skillsync;
 **Avinash Pathak**  
 Backend Developer | Java Enthusiast  
 [LinkedIn](https://linkedin.com/in/your-profile)  
-your.email@example.com
+[Email](mailto:avinashee0012@gmail.com)
 
 ---
 
