@@ -1,4 +1,4 @@
-# SkillSync — Job & Skill Match Platform
+# [ONGOING] SkillSync — Job & Skill Match Platform
 
 SkillSync is a modern job and skill matching platform that intelligently connects job seekers with relevant opportunities based on their skills, experience, and learning progress.
 
@@ -66,6 +66,8 @@ src/
      │   ├── service/
      │   ├── repo/
      │   ├── model/
+     │   │   ├── entity/
+     │   │   └── enums/   
      │   ├── config/
      │   └── dto/
      └── resources/
