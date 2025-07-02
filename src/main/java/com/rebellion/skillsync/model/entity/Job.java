@@ -3,6 +3,7 @@ package com.rebellion.skillsync.model.entity;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,28 +23,27 @@ import lombok.Data;
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long job_id;
+    private Long jobId;
     private String title;
     @Column(length = 2048)
     private String description;
     private String company;
-    private String location;
-    private Integer experience;
-    private LocalDateTime posted_at;
+    private String workLocation;
+    private Integer requiredExperience;
+    private LocalDateTime postedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User posted_by;
+    @JoinColumn(name = "userId", nullable = false)
+    private User postedBy;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
         name = "job_skill",
-        joinColumns = @JoinColumn(name = "job_id"),
-        inverseJoinColumns = @JoinColumn(name = "skill_id")
+        joinColumns = @JoinColumn(name = "jobId"),
+        inverseJoinColumns = @JoinColumn(name = "skillId")
     )
-    private Set<Skill> skills;
+    private Set<Skill> requiredSkills;
 
-    @OneToMany
-    @JoinColumn(name = "application_id")
-    private Set<Application> applications;
+    @OneToMany(mappedBy = "forjob", cascade = CascadeType.ALL)
+    private Set<Application> applicationsReceived;
 }

@@ -1,13 +1,16 @@
 package com.rebellion.skillsync.model.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
-
 import com.rebellion.skillsync.model.enums.Degree;
 import com.rebellion.skillsync.model.enums.Role;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,32 +28,34 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
     private String name;
+    // TODO : email+mobile to be made a composite key
     private String email;
     private Long mobile;
     private LocalDate dob;
     @Column(length = 2048)
     private String bio;
+    @Enumerated(EnumType.STRING)
     private Role role;
+    // TODO : Password encryption to be taken care of while implementing Security
     private String password;
+    @Enumerated(EnumType.STRING)
     private Degree degree;
     private Integer experience;
     private String location;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable (
-        name = "user_skills",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "skill_id")
+        name = "user_skill",
+        joinColumns = @JoinColumn(name = "userId"),
+        inverseJoinColumns = @JoinColumn(name = "skillId")
     )
-    private Set<Skill> skills;
+    private Set<Skill> haveSkills; // User can have multiple uique skills
     
-    @OneToMany
-    @JoinColumn(name = "job_id")
-    private Set<Job> jobs;
+    @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL)
+    private List<Job> postedJobs; // User can post multiple jobs
 
-    @OneToMany
-    @JoinColumn(name = "application_id")
-    private Set<Application> applications;
+    @OneToMany(mappedBy = "byUser", cascade = CascadeType.ALL)
+    private List<Application> applicationsMade; // User can make multiple applications
 }

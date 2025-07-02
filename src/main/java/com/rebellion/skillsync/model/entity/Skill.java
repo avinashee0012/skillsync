@@ -5,6 +5,8 @@ import java.util.Set;
 import com.rebellion.skillsync.model.enums.Proficiency;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,13 +20,14 @@ import lombok.Data;
 public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long skill_id;
+    private Long skillId;
     private String name;
+    @Enumerated(EnumType.STRING)
     private Proficiency proficiency;
 
-    @ManyToMany(mappedBy = "skills")
-    private Set<User> users;
+    @ManyToMany(mappedBy = "haveSkills")
+    private Set<User> usersWithSkill;
     
-    @ManyToMany(mappedBy = "skills")
-    private Set<Job> jobs;
+    @ManyToMany(mappedBy = "requiredSkills")
+    private Set<Job> jobsRequiringSkill;
 }
