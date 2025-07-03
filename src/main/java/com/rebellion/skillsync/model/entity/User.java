@@ -38,7 +38,6 @@ public class User {
     private String bio;
     @Enumerated(EnumType.STRING)
     private Role role;
-    // TODO : Password encryption to be taken care of while implementing Security
     private String password;
     @Enumerated(EnumType.STRING)
     private Degree degree;
