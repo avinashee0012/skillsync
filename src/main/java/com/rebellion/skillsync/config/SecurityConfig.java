@@ -16,29 +16,37 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-			.csrf(csrf -> csrf.disable())
-			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/register", "/api/register/save", "/v3/api-docs", "/swagger-ui/**").permitAll()
-				.anyRequest().authenticated()
-			)
-			.formLogin((form) -> form
-				.loginPage("/login")
-				.loginProcessingUrl("/api/login/auth")
-				.defaultSuccessUrl("/secret", true)
-				.permitAll()
-			)
-			.logout((logout) -> logout.permitAll());
+		http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests((requests) -> requests
+						.requestMatchers("/candidate/**").hasAnyRole("CANDIDATE", "ADMIN")
+						.requestMatchers("/employer/**").hasAnyRole("EMPLOYER", "ADMIN")
+						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/", "/register/**", "/login/**").permitAll()
+						.anyRequest().authenticated())
+				.formLogin((form) -> form.loginPage("/login").loginProcessingUrl("/login/auth")
+						.successHandler((request, response, authentication) -> {
+							String role = authentication.getAuthorities().iterator().next().getAuthority();
+							if (role.equals("ROLE_CANDIDATE")) {
+								response.sendRedirect("/candidate/dashboard");
+							} else if(role.equals("ROLE_EMPLOYER")){
+								response.sendRedirect("/employer/dashboard");
+							} else if(role.equals("ROLE_ADMIN")) {
+								response.sendRedirect("/admin/dashboard");
+							} else {
+								response.sendRedirect("/login");
+							}
+						}).permitAll())
+				.logout((logout) -> logout.permitAll());
 
 		return http.build();
 	}
 
 	@Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 
-    @Bean
+	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}

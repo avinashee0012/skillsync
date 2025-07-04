@@ -7,6 +7,7 @@ public interface UserService {
     User saveUserToDb(User user);
     
     // Read
+    User getUserByEmail(String email);
 
     // Update
     

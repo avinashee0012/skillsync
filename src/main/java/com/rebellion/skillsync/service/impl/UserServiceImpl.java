@@ -1,5 +1,7 @@
 package com.rebellion.skillsync.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,14 @@ public class UserServiceImpl implements UserService {
     public User saveUserToDb(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
+    }
+
+    public User getUserByEmail(String email) {
+        Optional<User> userFromDB = userRepo.findByEmail(email);
+        if(userFromDB.isPresent()){
+            return userFromDB.get();
+        }
+        return null;
     }
     
 }

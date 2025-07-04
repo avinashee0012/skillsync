@@ -22,10 +22,4 @@ public class MainController {
     public String getLoginPage(){
         return "login";
     }
-
-    // This page should be hidden behind login
-    @GetMapping("/secret")
-    public String getSecretPage(){
-        return "secret";
-    }
 }
