@@ -1,5 +1,6 @@
 package com.rebellion.skillsync.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService {
         return userRepo.save(user);
     }
 
+    @Override
     public User getUserByEmail(String email) {
         Optional<User> userFromDB = userRepo.findByEmail(email);
         if(userFromDB.isPresent()){
@@ -33,5 +35,31 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public User getUserById(Long userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUserById'");
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllUsers'");
+    }
+
+    @Override
+    public User updateUserById(Long userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateUserById'");
+    }
+
+    @Override
+    public void deleteUserById(Long userId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteUserById'");
+    }
+
+    
     
 }

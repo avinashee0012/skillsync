@@ -1,5 +1,7 @@
 package com.rebellion.skillsync.service;
 
+import java.util.List;
+
 import com.rebellion.skillsync.model.entity.User;
 
 public interface UserService {
@@ -8,8 +10,12 @@ public interface UserService {
     
     // Read
     User getUserByEmail(String email);
+    User getUserById(Long userId);
+    List<User> getAllUsers();
 
     // Update
+    User updateUserById(Long userId);
     
     // Delete
+    void deleteUserById(Long userId);
 }

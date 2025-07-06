@@ -1,5 +1,6 @@
 package com.rebellion.skillsync.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.rebellion.skillsync.dto.LoginDto;
+import com.rebellion.skillsync.dto.RegisterDto;
 import com.rebellion.skillsync.model.entity.User;
 import com.rebellion.skillsync.service.impl.UserServiceImpl;
 
@@ -20,25 +22,31 @@ public class AuthController {
 
     private final UserServiceImpl userServiceImpl;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
 
-    public AuthController(UserServiceImpl userServiceImpl, AuthenticationManager authenticationManager) {
+    public AuthController(UserServiceImpl userServiceImpl, AuthenticationManager authenticationManager, ModelMapper modelMapper) {
         this.userServiceImpl = userServiceImpl;
         this.authenticationManager = authenticationManager;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/register/save")
-    public ResponseEntity<User> postSignUp(@RequestBody User input) {
-        return ResponseEntity.ok(userServiceImpl.saveUserToDb(input));
+    public ResponseEntity<?> postSignUp(@RequestBody RegisterDto input) {
+        User foundUser = userServiceImpl.getUserByEmail(input.getEmail());
+        if(foundUser == null) {
+            userServiceImpl.saveUserToDb(modelMapper.map(input, User.class));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();     
     }
 
     @PostMapping("/login/auth")
-    public ResponseEntity<String> postLogin(@RequestBody LoginDto input) {
+    public ResponseEntity<?> postLogin(@RequestBody LoginDto input) {
         try {
-            authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
-            return ResponseEntity.ok("Login sucessful");
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
+            return ResponseEntity.status(HttpStatus.FOUND).build();
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Login Credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }

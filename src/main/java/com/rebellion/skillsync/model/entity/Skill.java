@@ -7,6 +7,7 @@ import com.rebellion.skillsync.model.enums.Proficiency;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,9 +26,9 @@ public class Skill {
     @Enumerated(EnumType.STRING)
     private Proficiency proficiency;
 
-    @ManyToMany(mappedBy = "haveSkills")
+    @ManyToMany(mappedBy = "haveSkills", fetch = FetchType.EAGER)
     private Set<User> usersWithSkill;
     
-    @ManyToMany(mappedBy = "requiredSkills")
+    @ManyToMany(mappedBy = "requiredSkills", fetch = FetchType.EAGER)
     private Set<Job> jobsRequiringSkill;
 }
