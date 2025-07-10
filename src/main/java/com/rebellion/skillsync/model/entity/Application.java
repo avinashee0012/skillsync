@@ -1,8 +1,6 @@
 package com.rebellion.skillsync.model.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.rebellion.skillsync.model.enums.Status;
 
 import jakarta.persistence.Entity;

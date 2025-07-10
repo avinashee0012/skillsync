@@ -1,9 +1,6 @@
 package com.rebellion.skillsync.model.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Set;
-
 import com.rebellion.skillsync.model.enums.EmploymentType;
 import com.rebellion.skillsync.model.enums.WorkModel;
 import jakarta.persistence.*;

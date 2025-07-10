@@ -1,7 +1,6 @@
 package com.rebellion.skillsync.controller;
 
 import com.rebellion.skillsync.dto.CandidateProfileDto;
-import com.rebellion.skillsync.dto.UserDto;
 import com.rebellion.skillsync.service.CandidateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
