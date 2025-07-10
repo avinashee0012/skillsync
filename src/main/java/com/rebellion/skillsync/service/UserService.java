@@ -1,21 +1,16 @@
 package com.rebellion.skillsync.service;
 
-import java.util.List;
-
-import com.rebellion.skillsync.model.entity.User;
+import com.rebellion.skillsync.dto.UserDto;
+import com.rebellion.skillsync.dto.UserRegisterDto;
+import com.rebellion.skillsync.dto.UserResponseDto;
 
 public interface UserService {
     // Create
-    User saveUserToDb(User user);
-    
+    UserResponseDto registerUser(UserRegisterDto user);
+
     // Read
-    User getUserByEmail(String email);
-    User getUserById(Long userId);
-    List<User> getAllUsers();
+    UserDto getUserById(Long id);
 
     // Update
-    User updateUserById(Long userId);
-    
     // Delete
-    void deleteUserById(Long userId);
 }

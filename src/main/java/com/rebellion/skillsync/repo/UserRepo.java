@@ -10,4 +10,5 @@ import com.rebellion.skillsync.model.entity.User;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+    boolean existsByEmail(String email);
 }

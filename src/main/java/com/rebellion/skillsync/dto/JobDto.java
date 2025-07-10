@@ -1,24 +1,25 @@
 package com.rebellion.skillsync.dto;
 
-import java.time.LocalDateTime;
-import java.util.Set;
-
-import com.rebellion.skillsync.model.entity.Application;
-import com.rebellion.skillsync.model.entity.Skill;
-import com.rebellion.skillsync.model.entity.User;
-
+import com.rebellion.skillsync.model.enums.EmploymentType;
+import com.rebellion.skillsync.model.enums.WorkModel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class JobDto {
-    private Long jobId;
+    private Long id;
     private String title;
     private String description;
-    private String company;
-    private String workLocation;
-    private Integer requiredExperience;
-    private LocalDateTime postedAt;
-    private User postedBy;
-    private Set<Skill> requiredSkills;
-    private Set<Application> applicationsReceived;
+    private String companyLocation;
+    private WorkModel workModel;
+    private EmploymentType employmentType;
+    private LocalDate postedDate;
+    private Long employerId;
 }

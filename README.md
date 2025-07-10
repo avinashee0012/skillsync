@@ -1,6 +1,6 @@
 # [ONGOING] SkillSync — Job & Skill Match Platform
 
-SkillSync is a modern job and skill matching platform that intelligently connects job seekers with relevant opportunities based on their skills, experience, and learning progress.
+SkillSync is a modern job and skill matching platform that intelligently connects jobseekers with relevant opportunities based on their skills, experience, and learning progress.
 
 ---
 

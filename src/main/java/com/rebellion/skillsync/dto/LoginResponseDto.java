@@ -6,18 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
-    private Long id;
-    private String fname;
-    private String lname;
+public class LoginResponseDto {
+    private Long userId;
     private String email;
-    private LocalDate dob;
     private Role role;
-    // -password
+    private String message;
 }

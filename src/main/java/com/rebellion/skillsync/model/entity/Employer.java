@@ -8,15 +8,19 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "skills")
+@Table(name = "employers")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Skill {
+public class Employer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    private String hiringFor;
 }

@@ -1,23 +1,20 @@
 package com.rebellion.skillsync.dto;
 
+import java.time.LocalDate;
 import com.rebellion.skillsync.model.enums.Role;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class UserDto {
-    private Long id;
+public class UserRegisterDto {
     private String fname;
     private String lname;
     private String email;
     private LocalDate dob;
+    private String password;
     private Role role;
-    // -password
 }

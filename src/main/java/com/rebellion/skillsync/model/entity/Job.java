@@ -1,50 +1,45 @@
 package com.rebellion.skillsync.model.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.rebellion.skillsync.model.enums.EmploymentType;
+import com.rebellion.skillsync.model.enums.WorkModel;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "jobs")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long jobId;
+    private Long id;
+
     private String title;
-    @Column(length = 2048)
+
+    @Column(length = 5000)
     private String description;
-    private String company;
-    private String workLocation;
-    private Integer requiredExperience;
-    private LocalDateTime postedAt;
+
+    private String companyLocation;
+
+    @Enumerated(EnumType.STRING)
+    private WorkModel workModel;
+
+    @Enumerated(EnumType.STRING)
+    private EmploymentType employmentType;
+
+    private LocalDate postedDate;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User postedBy;
+    @JoinColumn(name = "employer_id", nullable = false)
+    private Employer employer;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "job_skill",
-        joinColumns = @JoinColumn(name = "jobId"),
-        inverseJoinColumns = @JoinColumn(name = "skillId")
-    )
-    private Set<Skill> requiredSkills;
-
-    @OneToMany(mappedBy = "forjob", cascade = CascadeType.ALL)
-    private Set<Application> applicationsReceived;
 }

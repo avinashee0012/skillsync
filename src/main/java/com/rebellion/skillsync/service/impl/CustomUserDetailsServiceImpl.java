@@ -1,30 +1,26 @@
 package com.rebellion.skillsync.service.impl;
 
-import java.util.List;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import com.rebellion.skillsync.model.entity.User;
+import com.rebellion.skillsync.repo.UserRepo;
+import com.rebellion.skillsync.security.CustomUserDetails;
+import com.rebellion.skillsync.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.rebellion.skillsync.model.entity.User;
-import com.rebellion.skillsync.repo.UserRepo;
-import com.rebellion.skillsync.service.CustomUserDetailsService;
-
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
-
-    private UserRepo userRepo;
-
-    public CustomUserDetailsServiceImpl(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
+    private final UserRepo userRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepo.findByEmail(email)
-                      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())));
-    }
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        //  find user from DB
+        User user = userRepo.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
+        //  return user
+        return new CustomUserDetails(user);
+    }
 }

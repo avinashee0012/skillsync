@@ -1,5 +1,5 @@
 package com.rebellion.skillsync.model.enums;
 
 public enum Status {
-    APPLIED, PROGRESS, REJECTED, WITHDRAWN
+    APPLIED, WITHDRAWN, INTERVIEWING, REJECTED, ACCEPTED, LOST
 }
