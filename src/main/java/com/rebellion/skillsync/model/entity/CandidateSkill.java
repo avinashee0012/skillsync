@@ -22,11 +22,11 @@ public class CandidateSkill {
 
     // Defining many-to-many relation between candidate and skill
 
-    @ManyToOne // One Candidate --> Many CandidateSkill entry
+    @ManyToOne(fetch = FetchType.LAZY) // One Candidate --> Many CandidateSkill entry
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    @ManyToOne // One Skill --> Many CandidateSkill entry
+    @ManyToOne(fetch = FetchType.LAZY) // One Skill --> Many CandidateSkill entry
     @JoinColumn(name = "skill_id", nullable = false)
     private Skill skill;
 }

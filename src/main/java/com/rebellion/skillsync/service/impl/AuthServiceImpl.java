@@ -26,15 +26,12 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("invalid login credential");
         }
 
-        //  map User to LoginResponseDto
-        LoginResponseDto response = LoginResponseDto.builder()
+        //  map User to LoginResponseDto and return LoginResponseDto
+        return LoginResponseDto.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .message("Login successful.")
                 .build();
-
-        //  return LoginResponseDto
-        return response;
     }
 }

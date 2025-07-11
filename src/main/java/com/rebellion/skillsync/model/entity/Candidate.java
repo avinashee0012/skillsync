@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table(name = "candidates")
 @Data
@@ -19,7 +22,7 @@ public class Candidate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL) // allows the fname/lname to be modified via Candidate
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -35,4 +38,7 @@ public class Candidate {
     private String linkedinUrl;
 
     private String resumePath;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CandidateSkill> skills;
 }

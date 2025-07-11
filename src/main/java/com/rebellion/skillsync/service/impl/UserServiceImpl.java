@@ -58,17 +58,14 @@ public class UserServiceImpl implements UserService {
             case ADMIN -> adminRepo.save(Admin.builder().user(user).build());
         }
 
-        // map User to UserResponseDto
-        UserResponseDto response = UserResponseDto.builder()
+        // map User to UserResponseDto and return UserResponseDto
+        return UserResponseDto.builder()
                 .id(user.getId())
                 .fname(user.getFname())
                 .lname(user.getLname())
                 .email(user.getEmail())
                 .role(user.getRole())
                 .build();
-
-        // return UserResponseDto
-        return response;
     }
 
     @Override
