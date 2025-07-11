@@ -103,6 +103,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .toList();
 
         return CandidateProfileDto.builder()
+                .id(updatedCandidate.getId())
                 .fname(updatedCandidate.getUser().getFname())
                 .lname(updatedCandidate.getUser().getLname())
                 .degree(updatedCandidate.getDegree())
