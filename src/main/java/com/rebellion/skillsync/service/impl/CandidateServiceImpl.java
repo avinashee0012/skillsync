@@ -12,10 +12,12 @@ import com.rebellion.skillsync.service.CandidateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +74,7 @@ public class CandidateServiceImpl implements CandidateService {
         // update Skill fields --> Candidate update cascades to Skils
         // Clear existing skills
         candidate.getSkills().clear();  // <== This is causing problem because hibernate has deleted candidate from CandidateSkill yet
-            // Leading to addition later before deletion. Deleting manually.
+        // Leading to addition later before deletion. Deleting manually.
         candidateSkillRepo.deleteByCandidateId(candidate.getId());
 
         // add skills from incoming list
@@ -114,5 +116,45 @@ public class CandidateServiceImpl implements CandidateService {
                 .professionalSummary(updatedCandidate.getProfessionalSummary())
                 .skills(skillNames)
                 .build();
+    }
+
+    @Override
+    public String saveResumeToFS(Long userId, MultipartFile file) {
+
+        // find candidate in db
+        Candidate candidate = candidateRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Candidate not found with userId: " + userId));
+
+        try {
+            // create directory if it doesn't exist
+            String resumeDirectoryPath = "uploads/resumes";
+            File resumeDirectory = new File(resumeDirectoryPath);
+            if (!resumeDirectory.exists()) {
+                resumeDirectory.mkdirs();
+            }
+
+            // generate filename
+            String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename(); // throws FileNotFoundException if file is null or empty
+            String filePath = resumeDirectory.getAbsolutePath() + File.separator + fileName;
+
+
+
+            // save file to file system
+            file.transferTo(new File(filePath)); // if this works, means has been uploaded. It's safe to delete the previous one.
+
+            // delete the previous one <-- This can later be refactored
+            File oldResume = new File(candidate.getResumePath());
+            oldResume.delete();
+
+            //save new filepath in db
+            candidate.setResumePath(filePath);
+            candidateRepo.save(candidate);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Upload failed: " + e.getMessage());
+        }
+
+        // return status string
+        return "Resume uploaded successfully";
     }
 }
