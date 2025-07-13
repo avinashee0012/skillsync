@@ -11,6 +11,9 @@ import com.rebellion.skillsync.repo.UserRepo;
 import com.rebellion.skillsync.service.CandidateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +32,37 @@ public class CandidateServiceImpl implements CandidateService {
     private final SkillRepo skillRepo;
     private final CandidateSkillRepo candidateSkillRepo;
 
+    private Candidate getCandidateById(Long userId){
+        Candidate candidate = candidateRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("No candidate found with userId: " + userId));
+        return candidate;
+    }
+
+    private HttpStatus deleteResumeByPath(String resumePath) {
+        HttpStatus response = null;
+
+        if(!(resumePath == null) && !resumePath.isEmpty()){
+            try {
+                // locate file
+                File file = new File(resumePath);
+                // delete file
+                file.delete();
+                response = HttpStatus.NO_CONTENT;
+            } catch (RuntimeException e) {
+                response = HttpStatus.BAD_REQUEST;
+            }
+        } else {
+            response = HttpStatus.BAD_REQUEST;
+        }
+
+        // return status
+        return response;
+    }
+
     @Override
     public CandidateProfileDto getProfile(Long userId) {
         //  find candidate by userId
-        Candidate candidate = candidateRepo.findByUserId(userId).orElseThrow(() -> new RuntimeException("No candidate with userId: " + userId));
+        Candidate candidate = this.getCandidateById(userId);
 
         // Get skills from Candidate_Skill
         List<String> skillNames = candidate.getSkills().stream()
@@ -56,7 +86,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public CandidateProfileDto updateProfile(Long userId, CandidateProfileDto request) {
         //  find candidate by userId
-        Candidate candidate = candidateRepo.findByUserId(userId).orElseThrow(() -> new RuntimeException("No candidate with userId: " + userId));
+        Candidate candidate = this.getCandidateById(userId);
 
         //  modify candidate
 
@@ -122,8 +152,7 @@ public class CandidateServiceImpl implements CandidateService {
     public String saveResumeToFS(Long userId, MultipartFile file) {
 
         // find candidate in db
-        Candidate candidate = candidateRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Candidate not found with userId: " + userId));
+        Candidate candidate = this.getCandidateById(userId);
 
         try {
             // create directory if it doesn't exist
@@ -137,14 +166,11 @@ public class CandidateServiceImpl implements CandidateService {
             String fileName = userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename(); // throws FileNotFoundException if file is null or empty
             String filePath = resumeDirectory.getAbsolutePath() + File.separator + fileName;
 
-
-
             // save file to file system
             file.transferTo(new File(filePath)); // if this works, means has been uploaded. It's safe to delete the previous one.
 
-            // delete the previous one <-- This can later be refactored
-            File oldResume = new File(candidate.getResumePath());
-            oldResume.delete();
+            // delete the previous one
+            this.deleteResumeByPath(candidate.getResumePath());
 
             //save new filepath in db
             candidate.setResumePath(filePath);
@@ -156,5 +182,43 @@ public class CandidateServiceImpl implements CandidateService {
 
         // return status string
         return "Resume uploaded successfully";
+    }
+
+    @Override
+    public Resource downloadResumeFromFS(Long userId) {
+        Resource response = null;
+
+        // fetch candidate using userId
+        Candidate candidate = this.getCandidateById(userId);
+
+        // get file on resumePath
+        String resumePath = candidate.getResumePath();
+        if(resumePath == null || resumePath.isEmpty()){
+            throw new RuntimeException("No resume uploaded.");
+        }
+        try{
+            File resume = new File(resumePath);
+            if (!resume.exists()){
+                return response;
+            }
+            // serve file as downloadable
+            response = new UrlResource(resume.toURI()); // create a resource using URI that represents resume
+
+        } catch (Exception e) {
+            throw new RuntimeException("Download failed: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    @Override
+    public HttpStatus deleteResumeFromFS(Long userId) {
+        // find candidate
+        Candidate candidate = this.getCandidateById(userId);
+        // find resumePath
+        String resumePath = candidate.getResumePath();
+        HttpStatus response = this.deleteResumeByPath(resumePath);
+        candidateRepo.save(candidate);
+        return response;
     }
 }

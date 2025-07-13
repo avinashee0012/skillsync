@@ -4,7 +4,8 @@ import com.rebellion.skillsync.dto.CandidateProfileDto;
 import com.rebellion.skillsync.model.entity.Candidate;
 import com.rebellion.skillsync.service.CandidateService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,27 @@ public class CandidateController {
     public ResponseEntity<String> uploadResume(@RequestParam Long userId, @RequestParam MultipartFile file){
         String message = candidateService.saveResumeToFS(userId, file);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/resume")
+    public ResponseEntity<?> downloadResume(@RequestParam Long userId) {
+        Resource resource = candidateService.downloadResumeFromFS(userId);
+        if(resource == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No resume found!");
+        }
+        int skipFirstUnderscore = resource.getFilename().indexOf('_') + 1;
+        int skipSecondUnderscore = resource.getFilename().substring(skipFirstUnderscore).indexOf('_') + 1;
+        String downloadFileName = resource.getFilename().substring(skipFirstUnderscore + skipSecondUnderscore);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
+                .body(resource);
+    }
+
+    @DeleteMapping("/resume")
+    public ResponseEntity<HttpStatus> deleteResume(@RequestParam Long userId) {
+        HttpStatus status = candidateService.deleteResumeFromFS(userId);
+        return ResponseEntity.status(status.value()).build();
     }
 
 }
