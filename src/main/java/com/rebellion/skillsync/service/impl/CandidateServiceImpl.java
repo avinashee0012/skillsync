@@ -34,7 +34,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private Candidate getCandidateById(Long userId){
         Candidate candidate = candidateRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("No candidate found with userId: " + userId));
+                .orElse(null);
         return candidate;
     }
 
@@ -49,7 +49,7 @@ public class CandidateServiceImpl implements CandidateService {
                 file.delete();
                 response = HttpStatus.NO_CONTENT;
             } catch (RuntimeException e) {
-                response = HttpStatus.BAD_REQUEST;
+                response = HttpStatus.BAD_GATEWAY;
             }
         } else {
             response = HttpStatus.BAD_REQUEST;
@@ -63,6 +63,9 @@ public class CandidateServiceImpl implements CandidateService {
     public CandidateProfileDto getProfile(Long userId) {
         //  find candidate by userId
         Candidate candidate = this.getCandidateById(userId);
+        if(candidate == null) {
+            return null;
+        }
 
         // Get skills from Candidate_Skill
         List<String> skillNames = candidate.getSkills().stream()
@@ -87,6 +90,9 @@ public class CandidateServiceImpl implements CandidateService {
     public CandidateProfileDto updateProfile(Long userId, CandidateProfileDto request) {
         //  find candidate by userId
         Candidate candidate = this.getCandidateById(userId);
+        if(candidate == null) {
+            return null;
+        }
 
         //  modify candidate
 
@@ -153,6 +159,9 @@ public class CandidateServiceImpl implements CandidateService {
 
         // find candidate in db
         Candidate candidate = this.getCandidateById(userId);
+        if(candidate == null) {
+            return null;
+        }
 
         try {
             // create directory if it doesn't exist
@@ -190,6 +199,9 @@ public class CandidateServiceImpl implements CandidateService {
 
         // fetch candidate using userId
         Candidate candidate = this.getCandidateById(userId);
+        if(candidate == null) {
+            return null;
+        }
 
         // get file on resumePath
         String resumePath = candidate.getResumePath();
@@ -215,6 +227,9 @@ public class CandidateServiceImpl implements CandidateService {
     public HttpStatus deleteResumeFromFS(Long userId) {
         // find candidate
         Candidate candidate = this.getCandidateById(userId);
+        if(candidate == null) {
+            return null;
+        }
         // find resumePath
         String resumePath = candidate.getResumePath();
         HttpStatus response = this.deleteResumeByPath(resumePath);
