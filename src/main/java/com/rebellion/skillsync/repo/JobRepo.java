@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.rebellion.skillsync.model.entity.Job;
 
+import java.util.List;
+
 @Repository
 public interface JobRepo extends JpaRepository<Job, Long> {
+    List<Job> findByEmployerId(Long employerId);
 }

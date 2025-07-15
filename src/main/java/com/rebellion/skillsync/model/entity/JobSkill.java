@@ -3,8 +3,10 @@ package com.rebellion.skillsync.model.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @Entity
 @Table(name = "job_skills", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"job_id", "skill_id"})

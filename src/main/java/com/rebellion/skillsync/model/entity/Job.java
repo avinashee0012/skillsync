@@ -1,6 +1,8 @@
 package com.rebellion.skillsync.model.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import com.rebellion.skillsync.model.enums.EmploymentType;
 import com.rebellion.skillsync.model.enums.WorkModel;
 import jakarta.persistence.*;
@@ -39,4 +41,6 @@ public class Job {
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobSkill> skills;
 }

@@ -19,5 +19,4 @@ public class UserDto {
     private String email;
     private LocalDate dob;
     private Role role;
-    // -password
 }

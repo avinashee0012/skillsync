@@ -1,19 +1,21 @@
 package com.rebellion.skillsync.service;
 
 import java.util.List;
-import com.rebellion.skillsync.model.entity.Job;
+
+import com.rebellion.skillsync.dto.JobRequestDto;
+import com.rebellion.skillsync.dto.JobResponseDto;
+import org.springframework.http.HttpStatus;
 
 public interface JobService {
     // Create
-    Job saveJobToDb(Job job);
-    
+    JobResponseDto saveJobToDb(Long employerId, JobRequestDto job);
+
     // Read
-    Job getJobById(Long jobId);
-    List<Job> getAllJobs();
+    List<JobResponseDto> getJobsByEmployer(Long employerId);
 
     // Update
-    Job updateJobById(Long jobId);
-    
+    JobResponseDto updateJobInDb(Long jobId, JobRequestDto dto);
+
     // Delete
-    void deleteJobById(Long jobId);
+    HttpStatus deleteJobFromDb(Long jobId);
 }

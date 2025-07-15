@@ -8,18 +8,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JobDto {
-    private Long id;
+public class JobRequestDto {
     private String title;
     private String description;
     private String companyLocation;
     private WorkModel workModel;
     private EmploymentType employmentType;
-    private LocalDate postedDate;
-    private Long employerId;
+    private List<String> requiredSkills;
 }
