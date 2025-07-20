@@ -1,25 +1,24 @@
 package com.rebellion.skillsync.service.impl;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
 import com.rebellion.skillsync.model.entity.Employer;
+import com.rebellion.skillsync.model.entity.Job;
 import com.rebellion.skillsync.model.entity.JobSkill;
 import com.rebellion.skillsync.model.entity.Skill;
 import com.rebellion.skillsync.repo.EmployerRepo;
 import com.rebellion.skillsync.repo.JobRepo;
 import com.rebellion.skillsync.repo.JobSkillRepo;
 import com.rebellion.skillsync.repo.SkillRepo;
+import com.rebellion.skillsync.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.rebellion.skillsync.model.entity.Job;
-import com.rebellion.skillsync.service.JobService;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class JobServiceImpl implements JobService {
     private final SkillRepo skillRepo;
     private final JobSkillRepo jobSkillRepo;
 
-    private Employer getEmployerById(Long employerId){
+    private Employer getEmployerById(Long employerId) {
         Employer employer = employerRepo.findById(employerId).orElse(null);
         return employer;
     }
@@ -39,7 +38,7 @@ public class JobServiceImpl implements JobService {
     public JobResponseDto saveJobToDb(Long employerId, JobRequestDto request) {
         // find employer
         Employer employer = this.getEmployerById(employerId);
-        if(employer == null){
+        if (employer == null) {
             return null;
         }
 
@@ -90,7 +89,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<JobResponseDto> getJobsByEmployer(Long employerId) {
         // get jobs by employer
-        List<Job> jobs= jobRepo.findByEmployerId(employerId);
+        List<Job> jobs = jobRepo.findByEmployerId(employerId);
 
         // map job to jobResponseDto
         List<JobResponseDto> response = jobs.stream()
@@ -122,7 +121,7 @@ public class JobServiceImpl implements JobService {
     public JobResponseDto updateJobInDb(Long jobId, JobRequestDto request) {
         // fetch jobs by employer
         Job job = jobRepo.findById(jobId).orElse(null);
-        if(job == null) {
+        if (job == null) {
             return null;
         }
 
@@ -172,7 +171,7 @@ public class JobServiceImpl implements JobService {
     public HttpStatus deleteJobFromDb(Long jobId) {
         // find job
         Job job = jobRepo.findById(jobId).orElse(null);
-        if (job == null){
+        if (job == null) {
             return HttpStatus.BAD_REQUEST;
         }
         // delete associated jobSkills
@@ -180,5 +179,44 @@ public class JobServiceImpl implements JobService {
         // delete job
         jobRepo.deleteById(jobId);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @Override
+    public List<JobResponseDto> getFilteredJobs(String jobType, List<String> skills, String location) {
+
+        // fetch all jobs
+        List<Job> allJobs = jobRepo.findAll();
+
+        // filter jobs
+        List<JobResponseDto> filteredJobs = allJobs.stream().map(job -> JobResponseDto.builder()
+                        .id(job.getId())
+                        .title(job.getTitle())
+                        .description(job.getDescription())
+                        .companyLocation(job.getCompanyLocation())
+                        .workModel(job.getWorkModel())
+                        .employmentType(job.getEmploymentType())
+                        .postedDate(job.getPostedDate())
+                        .companyName(job.getEmployer().getCompanyName())
+                        .requiredSkills(job.getSkills().stream()
+                                .map(jobSkill -> jobSkill.getSkill().getName())
+                                .collect(Collectors.toList())
+                        )
+                        .build()
+                )
+                .filter(dto -> jobType == null || dto.getEmploymentType().name().equalsIgnoreCase(jobType))
+                .filter(dto -> location == null || dto.getCompanyLocation().equalsIgnoreCase(location))
+                .filter(dto -> {
+                    if (skills == null || skills.isEmpty()) {
+                        return true;
+                    }
+                    List<String> listOfSkills = dto.getRequiredSkills().stream()
+                            .map(s -> s.toLowerCase()).collect(Collectors.toList());
+                    return skills.stream().map(skill -> skill.toLowerCase())
+                            .allMatch(lowerCaseSkill -> listOfSkills.contains(lowerCaseSkill));
+                })
+                .collect(Collectors.toList());
+
+        // return List<JobResponseDto>
+        return filteredJobs;
     }
 }

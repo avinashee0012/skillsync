@@ -18,4 +18,6 @@ public interface JobService {
 
     // Delete
     HttpStatus deleteJobFromDb(Long jobId);
+
+    List<JobResponseDto> getFilteredJobs(String jobType, List<String> skills, String location);
 }

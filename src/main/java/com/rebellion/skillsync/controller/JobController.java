@@ -2,6 +2,7 @@ package com.rebellion.skillsync.controller;
 
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
+import com.rebellion.skillsync.model.entity.Job;
 import com.rebellion.skillsync.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,5 +42,15 @@ public class JobController {
     public ResponseEntity<Void> deleteJob(@PathVariable Long jobId) {
         HttpStatus response = jobService.deleteJobFromDb(jobId);
         return ResponseEntity.status(response).build();
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<JobResponseDto>> filterJobs(
+            @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) List<String> skills,
+            @RequestParam(required = false) String location
+        ) {
+        List<JobResponseDto> response = jobService.getFilteredJobs(jobType, skills, location);
+        return ResponseEntity.ok().body(response);
     }
 }
