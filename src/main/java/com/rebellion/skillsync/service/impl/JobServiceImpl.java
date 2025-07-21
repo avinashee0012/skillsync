@@ -1,16 +1,11 @@
 package com.rebellion.skillsync.service.impl;
 
+import com.rebellion.skillsync.dto.JobMatchDto;
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
-import com.rebellion.skillsync.model.entity.Employer;
-import com.rebellion.skillsync.model.entity.Job;
-import com.rebellion.skillsync.model.entity.JobSkill;
-import com.rebellion.skillsync.model.entity.Skill;
+import com.rebellion.skillsync.model.entity.*;
 import com.rebellion.skillsync.model.enums.EmploymentType;
-import com.rebellion.skillsync.repo.EmployerRepo;
-import com.rebellion.skillsync.repo.JobRepo;
-import com.rebellion.skillsync.repo.JobSkillRepo;
-import com.rebellion.skillsync.repo.SkillRepo;
+import com.rebellion.skillsync.repo.*;
 import com.rebellion.skillsync.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,11 +24,18 @@ public class JobServiceImpl implements JobService {
     private final EmployerRepo employerRepo;
     private final SkillRepo skillRepo;
     private final JobSkillRepo jobSkillRepo;
+    private final CandidateRepo candidateRepo;
 
     private Employer getEmployerById(Long employerId) {
         Employer employer = employerRepo.findById(employerId).orElse(null);
         return employer;
     }
+
+    private Candidate getCandidateById(Long candidateId) {
+        Candidate candidate = candidateRepo.findById(candidateId).orElse(null);
+        return candidate;
+    }
+
 
     @Override
     public JobResponseDto saveJobToDb(Long employerId, JobRequestDto request) {
@@ -182,6 +184,7 @@ public class JobServiceImpl implements JobService {
         return HttpStatus.NO_CONTENT;
     }
 
+    @Deprecated
     @Override
     public List<JobResponseDto> getFilteredJobs(EmploymentType jobType, List<String> skills, String location) {
 
@@ -246,6 +249,47 @@ public class JobServiceImpl implements JobService {
                         }).collect(Collectors.toList());
 
         // return List<JobResponseDto>
+        return response;
+    }
+
+    @Override
+    public List<JobMatchDto> getTopMatchingJobsForCandidate(Long candidateId) {
+        // find Candidate
+        Candidate candidate = this.getCandidateById(candidateId);
+        if(candidate == null){
+            return null;
+        }
+        // find candidate skill names
+        List<String> candidateSkills = candidate.getSkills().stream()
+                .map(candidateSkill -> candidateSkill.getSkill().getName().toLowerCase())
+                .collect(Collectors.toList());
+        // find all jobs
+        List<Job> allJobs = jobRepo.findAll();
+        // create List<JobMatchDto> for each job
+        List<JobMatchDto> response = allJobs.stream().map(job -> {
+                    List<String> requiredSkills = job.getSkills()
+                            .stream()
+                            .map(jobSkill -> jobSkill.getSkill().getName().toLowerCase())
+                            .toList();
+
+                    List<String> matchedSkills = requiredSkills.stream()
+                            .filter(skill -> candidateSkills.contains(skill))
+                            .toList();
+
+                    // ************* JOB-MATCHING-ALGO *************
+                    Integer matchScore = (requiredSkills.size() == 0) ? 0: (matchedSkills.size() * 100) / requiredSkills.size();
+
+                    return JobMatchDto.builder()
+                            .jobId(job.getId())
+                            .jobTitle(job.getTitle())
+                            .companyName(job.getEmployer().getCompanyName())
+                            .companyLocation(job.getCompanyLocation())
+                            .matchScore(matchScore)
+                            .build();
+                }).sorted((o1, o2) -> o2.getMatchScore().compareTo(o1.getMatchScore()))
+                .limit(10)
+                .collect(Collectors.toList());
+        // return
         return response;
     }
 }

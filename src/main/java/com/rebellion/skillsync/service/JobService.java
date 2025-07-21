@@ -2,6 +2,7 @@ package com.rebellion.skillsync.service;
 
 import java.util.List;
 
+import com.rebellion.skillsync.dto.JobMatchDto;
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
 import com.rebellion.skillsync.model.enums.EmploymentType;
@@ -20,8 +21,10 @@ public interface JobService {
     // Delete
     HttpStatus deleteJobFromDb(Long jobId);
 
+    @Deprecated
     List<JobResponseDto> getFilteredJobs(EmploymentType jobType, List<String> skills, String location);
 
     List<JobResponseDto> getOptimizedFilteredJobs(EmploymentType jobType, List<String> skills, String location);
 
+    List<JobMatchDto> getTopMatchingJobsForCandidate(Long candidateId);
 }

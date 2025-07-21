@@ -1,8 +1,8 @@
 package com.rebellion.skillsync.controller;
 
+import com.rebellion.skillsync.dto.JobMatchDto;
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
-import com.rebellion.skillsync.model.entity.Job;
 import com.rebellion.skillsync.model.enums.EmploymentType;
 import com.rebellion.skillsync.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +45,7 @@ public class JobController {
         return ResponseEntity.status(response).build();
     }
 
+    @Deprecated
     @GetMapping("/filter")
     public ResponseEntity<List<JobResponseDto>> filterJobs(
             @RequestParam(required = false) EmploymentType jobType,
@@ -55,7 +56,7 @@ public class JobController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/optimizedFilter")
+    @GetMapping("/optimized-filter")
     public ResponseEntity<List<JobResponseDto>> optimizedFilterJobs(
             @RequestParam(required = false) EmploymentType jobType,
             @RequestParam(required = false) List<String> skills,
@@ -63,5 +64,14 @@ public class JobController {
     ) {
         List<JobResponseDto> response = jobService.getOptimizedFilteredJobs(jobType, skills, location);
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/candidates/{candidateId}/job-matches")
+    public ResponseEntity<?> getTopMatches(@PathVariable Long candidateId) {
+        List<JobMatchDto> matches = jobService.getTopMatchingJobsForCandidate(candidateId);
+        if(matches == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Candidate not found");
+        }
+        return ResponseEntity.ok(matches);
     }
 }
