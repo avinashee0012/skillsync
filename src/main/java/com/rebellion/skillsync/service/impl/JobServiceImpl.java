@@ -6,6 +6,7 @@ import com.rebellion.skillsync.model.entity.Employer;
 import com.rebellion.skillsync.model.entity.Job;
 import com.rebellion.skillsync.model.entity.JobSkill;
 import com.rebellion.skillsync.model.entity.Skill;
+import com.rebellion.skillsync.model.enums.EmploymentType;
 import com.rebellion.skillsync.repo.EmployerRepo;
 import com.rebellion.skillsync.repo.JobRepo;
 import com.rebellion.skillsync.repo.JobSkillRepo;
@@ -182,7 +183,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<JobResponseDto> getFilteredJobs(String jobType, List<String> skills, String location) {
+    public List<JobResponseDto> getFilteredJobs(EmploymentType jobType, List<String> skills, String location) {
 
         // fetch all jobs
         List<Job> allJobs = jobRepo.findAll();
@@ -203,7 +204,7 @@ public class JobServiceImpl implements JobService {
                         )
                         .build()
                 )
-                .filter(dto -> jobType == null || dto.getEmploymentType().name().equalsIgnoreCase(jobType))
+                .filter(dto -> jobType == null || dto.getEmploymentType().equals(jobType))
                 .filter(dto -> location == null || dto.getCompanyLocation().equalsIgnoreCase(location))
                 .filter(dto -> {
                     if (skills == null || skills.isEmpty()) {
@@ -218,5 +219,33 @@ public class JobServiceImpl implements JobService {
 
         // return List<JobResponseDto>
         return filteredJobs;
+    }
+
+    @Override
+    public List<JobResponseDto> getOptimizedFilteredJobs(EmploymentType jobType, List<String> skills, String location) {
+        // find optimized filtered jobs from DB
+        List<Job> filteredJobs = jobRepo.findFilteredJobs(jobType, skills, location);
+
+        // map List<Job> to List<JobResponseDto>
+        List<JobResponseDto> response = filteredJobs.stream()
+                .map(job -> {
+                            List<String> requiredSkills = job.getSkills().stream()
+                                    .map(jobSkill -> jobSkill.getSkill().getName())
+                                    .collect(Collectors.toList());
+
+                            return JobResponseDto.builder()
+                                    .id(job.getId())
+                                    .title(job.getTitle())
+                                    .workModel(job.getWorkModel())
+                                    .companyLocation(job.getCompanyLocation())
+                                    .postedDate(job.getPostedDate())
+                                    .employmentType(job.getEmploymentType())
+                                    .companyName(job.getEmployer().getCompanyName())
+                                    .requiredSkills(requiredSkills)
+                                    .build();
+                        }).collect(Collectors.toList());
+
+        // return List<JobResponseDto>
+        return response;
     }
 }

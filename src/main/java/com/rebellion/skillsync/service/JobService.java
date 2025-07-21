@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
+import com.rebellion.skillsync.model.enums.EmploymentType;
 import org.springframework.http.HttpStatus;
 
 public interface JobService {
@@ -19,5 +20,8 @@ public interface JobService {
     // Delete
     HttpStatus deleteJobFromDb(Long jobId);
 
-    List<JobResponseDto> getFilteredJobs(String jobType, List<String> skills, String location);
+    List<JobResponseDto> getFilteredJobs(EmploymentType jobType, List<String> skills, String location);
+
+    List<JobResponseDto> getOptimizedFilteredJobs(EmploymentType jobType, List<String> skills, String location);
+
 }

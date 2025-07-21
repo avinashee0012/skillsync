@@ -3,6 +3,7 @@ package com.rebellion.skillsync.controller;
 import com.rebellion.skillsync.dto.JobRequestDto;
 import com.rebellion.skillsync.dto.JobResponseDto;
 import com.rebellion.skillsync.model.entity.Job;
+import com.rebellion.skillsync.model.enums.EmploymentType;
 import com.rebellion.skillsync.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,11 +47,21 @@ public class JobController {
 
     @GetMapping("/filter")
     public ResponseEntity<List<JobResponseDto>> filterJobs(
-            @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) EmploymentType jobType,
             @RequestParam(required = false) List<String> skills,
             @RequestParam(required = false) String location
         ) {
         List<JobResponseDto> response = jobService.getFilteredJobs(jobType, skills, location);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/optimizedFilter")
+    public ResponseEntity<List<JobResponseDto>> optimizedFilterJobs(
+            @RequestParam(required = false) EmploymentType jobType,
+            @RequestParam(required = false) List<String> skills,
+            @RequestParam(required = false) String location
+    ) {
+        List<JobResponseDto> response = jobService.getOptimizedFilteredJobs(jobType, skills, location);
         return ResponseEntity.ok().body(response);
     }
 }
