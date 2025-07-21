@@ -46,5 +46,4 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "job_id", nullable = false)
     private Job job;
-
 }

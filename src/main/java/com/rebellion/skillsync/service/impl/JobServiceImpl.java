@@ -239,6 +239,7 @@ public class JobServiceImpl implements JobService {
                             return JobResponseDto.builder()
                                     .id(job.getId())
                                     .title(job.getTitle())
+                                    .description(job.getDescription())
                                     .workModel(job.getWorkModel())
                                     .companyLocation(job.getCompanyLocation())
                                     .postedDate(job.getPostedDate())
