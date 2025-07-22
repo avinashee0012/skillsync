@@ -278,7 +278,7 @@ public class JobServiceImpl implements JobService {
                             .toList();
 
                     // ************* JOB-MATCHING-ALGO *************
-                    Integer matchScore = (requiredSkills.size() == 0) ? 0: (matchedSkills.size() * 100) / requiredSkills.size();
+                    Integer matchScore = (requiredSkills.isEmpty()) ? 0: (matchedSkills.size() * 100) / requiredSkills.size();
 
                     return JobMatchDto.builder()
                             .jobId(job.getId())
